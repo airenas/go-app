@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	goapp.StartWithFlags()
+	goapp.StartWithDefault()
 
 	name := goapp.Config.GetString("sample_name")
 	goapp.Log.Infof("Hello world, %s!", name)

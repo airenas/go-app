@@ -1,6 +1,7 @@
 package goapp
 
 import (
+	"flag"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -68,6 +69,19 @@ func TestLoggerLevelInitFromEnv(t *testing.T) {
 
 	os.Setenv("LOGGER_LEVEL", "trace")
 	initAppFromTempFile(t, "logger:\n    level: info\n")
+
+	assert.Equal(t, "trace", Log.GetLevel().String())
+}
+
+func TestStartWitFlags(t *testing.T) {
+	f, err := ioutil.TempFile("", "test.*.yml")
+	assert.Nil(t, err)
+	f.WriteString("logger:\n  level: TRACE")
+	f.Sync()
+	defer os.Remove(f.Name())
+
+	fs := flag.NewFlagSet("", flag.ExitOnError)
+	StartWithFlags(fs, []string{"app", "-c", f.Name()})
 
 	assert.Equal(t, "trace", Log.GetLevel().String())
 }

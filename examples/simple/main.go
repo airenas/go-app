@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	goapp.StartWithFlags()
+	goapp.StartWithDefault()
 
 	goapp.Log.Debug("Now will be printing: Hello world")
 	goapp.Log.Info("Hello world!")

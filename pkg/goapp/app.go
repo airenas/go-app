@@ -41,16 +41,22 @@ func InitConfig(configFile string) error {
 	return nil
 }
 
-//StartWithFlags default app initialization function
+//StartWithDefault default app initialization function
 // Tries to load config from commandline option '-c'
 // panics on error
-func StartWithFlags() {
-	cFile := flag.String("c", "", "Config yml file")
-	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:[params] \n", os.Args[0])
-		flag.PrintDefaults()
+func StartWithDefault() {
+	StartWithFlags(flag.CommandLine, os.Args)
+}
+
+//StartWithFlags app initialization function with flagset
+// panics on error
+func StartWithFlags(fs *flag.FlagSet, args []string) {
+	cFile := fs.String("c", "", "Config yml file")
+	fs.Usage = func() {
+		fmt.Fprintf(fs.Output(), "Usage of %s:[params] \n", args[0])
+		fs.PrintDefaults()
 	}
-	flag.Parse()
+	fs.Parse(args[1:])
 	err := InitConfig(*cFile)
 	if err != nil {
 		Log.Fatal(errors.Wrap(err, "Can't init app"))
