@@ -86,6 +86,13 @@ func TestStartWitFlags(t *testing.T) {
 	assert.Equal(t, "trace", Log.GetLevel().String())
 }
 
+func TestStartWitFlags_Panic(t *testing.T) {
+	assert.Panics(t, func() {
+		fs := flag.NewFlagSet("", flag.PanicOnError)
+		StartWithFlags(fs, []string{"app", "-a", "olia.yml"})
+	})
+}
+
 func initAppFromTempFile(t *testing.T, data string) {
 	f, err := ioutil.TempFile("", "test.*.yml")
 	assert.Nil(t, err)
