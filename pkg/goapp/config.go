@@ -12,8 +12,10 @@ var Config = viper.New()
 //Sub extracts Sub config from viper using env variables
 func Sub(config *viper.Viper, name string) *viper.Viper {
 	res := config.Sub(name)
-	InitEnv(res)
-	res.SetEnvPrefix(name)
+	if res != nil {
+		InitEnv(res)
+		res.SetEnvPrefix(name)
+	}
 	return res
 }
 

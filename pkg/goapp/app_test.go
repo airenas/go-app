@@ -43,6 +43,13 @@ func TestEnvBeatsSubConfig(t *testing.T) {
 	assert.Equal(t, "xxxx", Sub(Config, "messageServer").GetString("url"))
 }
 
+func TestSub_NoFail(t *testing.T) {
+	initAppFromTempFile(t, "messageServer:\n     url: olia\n")
+
+	assert.NotNil(t, Sub(Config, "messageServer"))
+	assert.Nil(t, Sub(Config, "messageServer1"))
+}
+
 func TestEnvBeatsSubConfigNested(t *testing.T) {
 	os.Setenv("MESSAGE_SERVER_URL", "xxxx")
 	initAppFromTempFile(t, "message:\n  server:\n    url: olia\n")
