@@ -57,6 +57,17 @@ func TestEnvBeatsSubConfigNested(t *testing.T) {
 	assert.Equal(t, "xxxx", Sub(Config, "message").GetString("server.url"))
 }
 
+
+// the test fails as where is no option to get current env prefix from config
+// func TestEnvBeatsSeveralSubConfigNested(t *testing.T) {
+// 	os.Setenv("MESSAGE_SERVER_URL", "xxxx")
+// 	initAppFromTempFile(t, "message:\n  server:\n    url: olia\n")
+
+// 	cfg := Sub(Config, "message")
+
+// 	assert.Equal(t, "xxxx", Sub(cfg, "server").GetString("url"))
+// }
+
 func TestDefaultLogger(t *testing.T) {
 	initDefaultLevel()
 	initAppFromTempFile(t, "")
