@@ -1,6 +1,9 @@
 package goapp
 
-import "net/url"
+import (
+	"net/url"
+	"time"
+)
 
 //HidePass removes pass from URL
 func HidePass(link string) string {
@@ -13,4 +16,13 @@ func HidePass(link string) string {
 		u.User = url.UserPassword(u.User.Username(), "----")
 	}
 	return u.String()
+}
+
+//Estimate estimates and logs execution duration
+// sample: defer goapp.Estimate("function")()
+func Estimate(name string) func() {
+	start := time.Now()
+	return func() {
+		Log.Infof("%s took %v", name, time.Since(start))
+	}
 }
