@@ -25,6 +25,10 @@ func initLogFromEnv(c *logrus_mate.LoggerConfig) {
 	if ll != "" {
 		c.Level = ll
 	}
+	out := Config.GetString("logger.out.name")
+	if out != "" {
+		c.Out.Name = out
+	}
 }
 
 func initDefaultLogConfig() {

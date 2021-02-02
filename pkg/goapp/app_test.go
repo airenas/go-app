@@ -57,7 +57,6 @@ func TestEnvBeatsSubConfigNested(t *testing.T) {
 	assert.Equal(t, "xxxx", Sub(Config, "message").GetString("server.url"))
 }
 
-
 // the test fails as where is no option to get current env prefix from config
 // func TestEnvBeatsSeveralSubConfigNested(t *testing.T) {
 // 	os.Setenv("MESSAGE_SERVER_URL", "xxxx")
@@ -89,6 +88,21 @@ func TestLoggerLevelInitFromEnv(t *testing.T) {
 	initAppFromTempFile(t, "logger:\n    level: info\n")
 
 	assert.Equal(t, "trace", Log.GetLevel().String())
+}
+
+func TestLoggerOutFromEnv(t *testing.T) {
+	initDefaultLevel()
+	assert.Equal(t, os.Stdout, Log.Out)
+
+	os.Setenv("LOGGER_OUT_NAME", "stderr")
+	initAppFromTempFile(t, "logger:\n    level: info\n")
+
+	assert.Equal(t, os.Stderr, Log.Out)
+
+	os.Setenv("LOGGER_OUT_NAME", "stdout")
+	initAppFromTempFile(t, "logger:\n    level: info\n")
+
+	assert.Equal(t, os.Stdout, Log.Out)
 }
 
 func TestStartWitFlags(t *testing.T) {
@@ -123,4 +137,5 @@ func initAppFromTempFile(t *testing.T, data string) {
 
 func initDefaultLevel() {
 	Log.SetLevel(logrus.ErrorLevel)
+	Log.Out = os.Stdout
 }
