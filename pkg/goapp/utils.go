@@ -41,16 +41,15 @@ func ValidateHTTPResp(resp *http.Response, bodyLen int) error {
 
 func getBodyStr(rd io.Reader, l int) string {
 	if l > 0 {
-		bytes := make([]byte, l+1)
-		n, err := rd.Read(bytes)
+		bytes, err := io.ReadAll(io.LimitReader(rd, int64(l+1)))
 		if err != nil && err != io.EOF {
 			Log.Warn(err)
 		}
-		if n > l {
+		if len(bytes) > l {
 			return "\n" + string(bytes[:l]) + "..."
 		}
-		if n > 0 {
-			return "\n" + string(bytes[:n])
+		if len(bytes) > 0 {
+			return "\n" + string(bytes)
 		}
 	}
 	return ""
