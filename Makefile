@@ -15,21 +15,18 @@ test/unit:
 ## code vet and lint
 test/lint: 
 	go vet ./...
-	go get -u golang.org/x/lint/golint
+	go install golang.org/x/lint/golint@latest
 	golint -set_exit_status ./...
-	go mod tidy ## drop lint usage in mod
 .PHONY: test/lint
-## creates git tag for library version
-git/tag:
-	git tag $(version)	
-.PHONY: git/tag
-## push git tag version to github
-git/push/tag:
+#####################################################################################
+## creates new git tag and pushes to github 
+git/create/version:
+	git tag $(version)
 	git push origin $(version)
-.PHONY: git/push/tag
+.PHONY: git/create/version
 #####################################################################################
 ## cleans all temporary data
 clean:
 	go clean
-	go mod tidy
+	go mod tidy -compat=1.17
 .PHONY: clean	
