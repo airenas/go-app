@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -53,4 +54,10 @@ func getBodyStr(rd io.Reader, l int) string {
 		}
 	}
 	return ""
+}
+
+// Sanitize replaces new lines in str for logging
+func Sanitize(str string) string {
+	r := strings.NewReplacer("\n", " ", "\r", " ")
+	return r.Replace(str)
 }

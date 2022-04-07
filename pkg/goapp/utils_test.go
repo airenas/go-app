@@ -51,20 +51,40 @@ func TestValidateHTTPResp(t *testing.T) {
 func Test_getBodyStr(t *testing.T) {
 	tests := []struct {
 		name string
-		rd io.Reader
-		l  int
+		rd   io.Reader
+		l    int
 		want string
 	}{
-		{name:"Empty", rd: strings.NewReader(""), l: 10, want: ""},
-		{name:"New line", rd: strings.NewReader("a"), l: 10, want: "\na"},
-		{name:"Trim", rd: strings.NewReader(strings.Repeat("a", 20)), l: 10, want: "\n" + strings.Repeat("a", 10) + "..."},
-		{name:"Full", rd: strings.NewReader(strings.Repeat("a", 20)), l: 20, want: "\n" + strings.Repeat("a", 20)},
-		{name:"Long", rd: strings.NewReader(strings.Repeat("a", 20000)), l: 20000, want: "\n" + strings.Repeat("a", 20000)},
+		{name: "Empty", rd: strings.NewReader(""), l: 10, want: ""},
+		{name: "New line", rd: strings.NewReader("a"), l: 10, want: "\na"},
+		{name: "Trim", rd: strings.NewReader(strings.Repeat("a", 20)), l: 10, want: "\n" + strings.Repeat("a", 10) + "..."},
+		{name: "Full", rd: strings.NewReader(strings.Repeat("a", 20)), l: 20, want: "\n" + strings.Repeat("a", 20)},
+		{name: "Long", rd: strings.NewReader(strings.Repeat("a", 20000)), l: 20000, want: "\n" + strings.Repeat("a", 20000)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := getBodyStr(tt.rd, tt.l); got != tt.want {
 				t.Errorf("getBodyStr() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSanitize(t *testing.T) {
+	tests := []struct {
+		name string
+		args string
+		want string
+	}{
+		{name: "Leaves", args: "olia olia", want: "olia olia"},
+		{name: "Changes \\n", args: "olia \nolia\n", want: "olia  olia "},
+		{name: "Changes \\r", args: "olia \rolia\r", want: "olia  olia "},
+		{name: "Changes \\n\\r", args: "olia \r\nolia\r\n", want: "olia   olia  "},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Sanitize(tt.args); got != tt.want {
+				t.Errorf("Sanitize() = %v, want %v", got, tt.want)
 			}
 		})
 	}
