@@ -17,6 +17,6 @@ Simple template for go app with log and config initialized
 ### License
 
 Copyright © 2022, [Airenas Vaičiūnas](https://github.com/airenas).
-Released under the [The 3-Clause BSD License](LICENSE).
+Released under [The 3-Clause BSD License](LICENSE).
 
 ---

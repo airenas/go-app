@@ -13,7 +13,7 @@ import (
 func HidePass(link string) string {
 	u, err := url.Parse(link)
 	if err != nil {
-		Log.Warn("Can't parse url.")
+		Log.Warn().Msg("can't parse url.")
 		return ""
 	}
 	if u.User != nil {
@@ -27,7 +27,7 @@ func HidePass(link string) string {
 func Estimate(name string) func() {
 	start := time.Now()
 	return func() {
-		Log.Infof("%s took %v", name, time.Since(start))
+		Log.Info().Msgf("%s took %v", name, time.Since(start))
 	}
 }
 
@@ -44,7 +44,7 @@ func getBodyStr(rd io.Reader, l int) string {
 	if l > 0 {
 		bytes, err := io.ReadAll(io.LimitReader(rd, int64(l+1)))
 		if err != nil && err != io.EOF {
-			Log.Warn(err)
+			Log.Warn().Err(err).Send()
 		}
 		if len(bytes) > l {
 			return "\n" + string(bytes[:l]) + "..."

@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -90,21 +90,6 @@ func TestLoggerLevelInitFromEnv(t *testing.T) {
 	assert.Equal(t, "trace", Log.GetLevel().String())
 }
 
-func TestLoggerOutFromEnv(t *testing.T) {
-	initDefaultLevel()
-	assert.Equal(t, os.Stdout, Log.Out)
-
-	os.Setenv("LOGGER_OUT_NAME", "stderr")
-	initAppFromTempFile(t, "logger:\n    level: info\n")
-
-	assert.Equal(t, os.Stderr, Log.Out)
-
-	os.Setenv("LOGGER_OUT_NAME", "stdout")
-	initAppFromTempFile(t, "logger:\n    level: info\n")
-
-	assert.Equal(t, os.Stdout, Log.Out)
-}
-
 func TestStartWitFlags(t *testing.T) {
 	f, err := ioutil.TempFile("", "test.*.yml")
 	assert.Nil(t, err)
@@ -136,6 +121,6 @@ func initAppFromTempFile(t *testing.T, data string) {
 }
 
 func initDefaultLevel() {
-	Log.SetLevel(logrus.ErrorLevel)
-	Log.Out = os.Stdout
+	Log.Level(zerolog.InfoLevel)
+	Log.Output(os.Stdout)
 }

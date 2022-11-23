@@ -1,42 +1,27 @@
 package goapp
 
 import (
-	"github.com/heirko/go-contrib/logrusHelper"
-	"github.com/heralight/logrus_mate"
-	"github.com/sirupsen/logrus"
+	"strings"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 //Log is applications logger
-var Log = logrus.New()
+var Log = log.Logger
 
 func initLog() {
-	initDefaultLogConfig()
-	c := logrusHelper.UnmarshalConfiguration(Config.Sub("logger"))
-	initLogFromEnv(&c)
-	err := logrusHelper.SetConfig(Log, c)
+	sl := Config.GetString("logger.level")
+	if sl == "" {
+		sl = "info"
+	}
+	l, err := zerolog.ParseLevel(strings.ToLower(sl))
 	if err != nil {
-		Log.Error("Can't init log ", err)
+		Log.Error().Err(err).Msgf("can't parse %s", sl)
+	} else {
+		Log = log.Logger.Level(l).Output(zerolog.NewConsoleWriter())
 	}
-}
-
-//initLogFromEnv tries to set level from environment
-func initLogFromEnv(c *logrus_mate.LoggerConfig) {
-	ll := Config.GetString("logger.level")
-	if ll != "" {
-		c.Level = ll
+	if strings.ToLower(Config.GetString("logger.out")) == "console" {
+		Log = log.Logger.Level(l).Output(zerolog.NewConsoleWriter(func(w *zerolog.ConsoleWriter) { w.TimeFormat = "2006-01-02T15:04:05.000" }))
 	}
-	out := Config.GetString("logger.out.name")
-	if out != "" {
-		c.Out.Name = out
-	}
-}
-
-func initDefaultLogConfig() {
-	defaultLogConfig := map[string]interface{}{
-		"level":                              "info",
-		"formatter.name":                     "text",
-		"formatter.options.full_timestamp":   true,
-		"formatter.options.timestamp_format": "2006-01-02T15:04:05.000",
-	}
-	Config.SetDefault("logger", defaultLogConfig)
 }

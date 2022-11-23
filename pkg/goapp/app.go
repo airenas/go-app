@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/pkg/errors"
 )
 
 //InitConfig tries to load config.yml from exe's dir
@@ -22,21 +20,21 @@ func InitConfig(configFile string) error {
 		// Find home directory.
 		ex, err := os.Executable()
 		if err != nil {
-			return errors.Wrap(err, "Can't get the app directory")
+			return fmt.Errorf("can't get the app directory: %w", err)
 		}
 		Config.AddConfigPath(filepath.Dir(ex))
 		Config.SetConfigName("config")
 	}
 
 	if err := Config.ReadInConfig(); err != nil {
-		Log.Warn("Can't read config:", err)
+		Log.Warn().Err(err).Msg("can't read config")
 		if failOnNoFail {
-			return errors.Wrap(err, "Can't read config:")
+			return fmt.Errorf("can't read config: %w", err)
 		}
 	}
 	initLog()
 	if Config.ConfigFileUsed() != "" {
-		Log.Info("Config loaded from: ", Config.ConfigFileUsed())
+		Log.Info().Msgf("Config loaded from: %s", Config.ConfigFileUsed())
 	}
 	return nil
 }
@@ -59,6 +57,6 @@ func StartWithFlags(fs *flag.FlagSet, args []string) {
 	fs.Parse(args[1:])
 	err := InitConfig(*cFile)
 	if err != nil {
-		Log.Fatal(errors.Wrap(err, "Can't init app"))
+		Log.Fatal().Err(err).Msg("can't init app")
 	}
 }

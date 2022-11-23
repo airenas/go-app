@@ -28,5 +28,5 @@ git/create/version:
 ## cleans all temporary data
 clean:
 	go clean
-	go mod tidy -compat=1.17
+	go mod tidy -compat=1.18
 .PHONY: clean	
