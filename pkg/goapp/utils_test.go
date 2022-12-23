@@ -60,6 +60,7 @@ func Test_getBodyStr(t *testing.T) {
 		{name: "Trim", rd: strings.NewReader(strings.Repeat("a", 20)), l: 10, want: "\n" + strings.Repeat("a", 10) + "..."},
 		{name: "Full", rd: strings.NewReader(strings.Repeat("a", 20)), l: 20, want: "\n" + strings.Repeat("a", 20)},
 		{name: "Long", rd: strings.NewReader(strings.Repeat("a", 20000)), l: 20000, want: "\n" + strings.Repeat("a", 20000)},
+		{name: "UTF-8 symbols", rd: strings.NewReader("ĄČĘĖĮĄČĘĖĮ"), l: 5, want: "\nĄČ..."},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

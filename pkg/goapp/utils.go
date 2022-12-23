@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-//HidePass removes pass from URL
+// HidePass removes pass from URL
 func HidePass(link string) string {
 	u, err := url.Parse(link)
 	if err != nil {
@@ -22,7 +22,7 @@ func HidePass(link string) string {
 	return u.String()
 }
 
-//Estimate estimates and logs execution duration
+// Estimate estimates and logs execution duration
 // sample: defer goapp.Estimate("function")()
 func Estimate(name string) func() {
 	start := time.Now()
@@ -31,7 +31,7 @@ func Estimate(name string) func() {
 	}
 }
 
-//ValidateHTTPResp returns error if code is not in [200, 299]
+// ValidateHTTPResp returns error if code is not in [200, 299]
 // bodyLen - size of bytes to try read body
 func ValidateHTTPResp(resp *http.Response, bodyLen int) error {
 	if !(resp.StatusCode >= 200 && resp.StatusCode <= 299) {
@@ -47,7 +47,13 @@ func getBodyStr(rd io.Reader, l int) string {
 			Log.Warn().Err(err).Send()
 		}
 		if len(bytes) > l {
-			return "\n" + string(bytes[:l]) + "..."
+			// use runes to make sure we don't crack utf-8
+			// and drop last symbol
+			rns := []rune(string(bytes))
+			if len(rns) > 0 {
+				rns = rns[:len(rns)-1]
+			}
+			return "\n" + string(rns) + "..."
 		}
 		if len(bytes) > 0 {
 			return "\n" + string(bytes)
