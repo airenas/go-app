@@ -3,6 +3,7 @@ module github.com/airenas/go-app
 go 1.18
 
 require (
+	github.com/cenkalti/backoff/v4 v4.2.0
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/viper v1.14.0
 	github.com/stretchr/testify v1.8.1

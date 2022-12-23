@@ -1,12 +1,18 @@
 package goapp
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
+	"syscall"
 	"time"
+
+	"github.com/cenkalti/backoff/v4"
 )
 
 // HidePass removes pass from URL
@@ -66,4 +72,50 @@ func getBodyStr(rd io.Reader, l int) string {
 func Sanitize(str string) string {
 	r := strings.NewReplacer("\n", " ", "\r", " ")
 	return r.Replace(str)
+}
+
+// IsRetryableCode returns true if status is a retryable HTTP code
+func IsRetryableCode(c int) bool {
+	return c != http.StatusBadRequest && c != http.StatusUnauthorized && c != http.StatusNotFound && c != http.StatusConflict
+}
+
+// InvokeWithBackoff func with backoff
+func InvokeWithBackoff[K any](ctx context.Context, f func() (K, bool, error), b backoff.BackOff) (K, error) {
+	c := 0
+	var err error
+	var res K
+	var retry bool
+	op := func() (K, error) {
+		select {
+		case <-ctx.Done():
+			if err != nil {
+				return res, backoff.Permanent(err)
+			}
+			return res, backoff.Permanent(context.DeadlineExceeded)
+		default:
+			if c > 0 {
+				Log.Info().Int("count", c).Msg("retry")
+			}
+		}
+		c++
+		res, retry, err = f()
+		if err != nil && !retry {
+			Log.Info().Msg("not retryable error")
+			return res, backoff.Permanent(err)
+		}
+		return res, err
+	}
+	return backoff.RetryWithData(op, b)
+}
+
+// IsRetryableErr check if err may be retryable
+func IsRetryableErr(err error) bool {
+	return errors.Is(err, io.EOF) || errors.Is(err, context.DeadlineExceeded) ||
+		errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ECONNRESET) ||
+		isTimeout(err)
+}
+
+func isTimeout(err error) bool {
+	e, ok := err.(net.Error)
+	return ok && e.Timeout()
 }
