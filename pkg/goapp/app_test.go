@@ -2,7 +2,6 @@ package goapp
 
 import (
 	"flag"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -12,13 +11,13 @@ import (
 
 func TestReadEnvVariable(t *testing.T) {
 	os.Setenv("MESSAGESERVER_URL", "olia")
-	InitConfig("")
+	_ = InitConfig("")
 	assert.Equal(t, "olia", Config.GetString("messageServer.url"))
 }
 
 func TestReadBoolEnvVariable(t *testing.T) {
 	os.Setenv("SENDINFORMMESSAGES", "true")
-	InitConfig("")
+	_ = InitConfig("")
 
 	assert.Equal(t, true, Config.GetBool("sendInformMessages"))
 }
@@ -91,10 +90,10 @@ func TestLoggerLevelInitFromEnv(t *testing.T) {
 }
 
 func TestStartWitFlags(t *testing.T) {
-	f, err := ioutil.TempFile("", "test.*.yml")
+	f, err := os.CreateTemp("", "test.*.yml")
 	assert.Nil(t, err)
-	f.WriteString("logger:\n  level: TRACE")
-	f.Sync()
+	_, _ = f.WriteString("logger:\n  level: TRACE")
+	_ = f.Sync()
 	defer os.Remove(f.Name())
 
 	fs := flag.NewFlagSet("", flag.ExitOnError)
@@ -111,13 +110,13 @@ func TestStartWitFlags_Panic(t *testing.T) {
 }
 
 func initAppFromTempFile(t *testing.T, data string) {
-	f, err := ioutil.TempFile("", "test.*.yml")
+	f, err := os.CreateTemp("", "test.*.yml")
 	assert.Nil(t, err)
-	f.WriteString(data)
-	f.Sync()
+	_, _ = f.WriteString(data)
+	_ = f.Sync()
 
 	defer os.Remove(f.Name())
-	InitConfig(f.Name())
+	_ = InitConfig(f.Name())
 }
 
 func initDefaultLevel() {
