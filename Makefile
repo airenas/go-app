@@ -15,8 +15,8 @@ test/unit:
 ## code vet and lint
 test/lint: 
 	go vet ./...
-	go install golang.org/x/lint/golint@latest
-	golint -set_exit_status ./...
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint run -v --enable gofmt --enable misspell ./...
 .PHONY: test/lint
 #####################################################################################
 ## creates new git tag and pushes to github 

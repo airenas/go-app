@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-//InitConfig tries to load config.yml from exe's dir
+// InitConfig tries to load config.yml from exe's dir
 func InitConfig(configFile string) error {
 	InitEnv(Config)
 
@@ -39,14 +39,14 @@ func InitConfig(configFile string) error {
 	return nil
 }
 
-//StartWithDefault default app initialization function
+// StartWithDefault default app initialization function
 // Tries to load config from commandline option '-c'
 // panics on error
 func StartWithDefault() {
 	StartWithFlags(flag.CommandLine, os.Args)
 }
 
-//StartWithFlags app initialization function with flagset
+// StartWithFlags app initialization function with flagset
 // panics on error
 func StartWithFlags(fs *flag.FlagSet, args []string) {
 	cFile := fs.String("c", "", "Config yml file")
@@ -54,9 +54,11 @@ func StartWithFlags(fs *flag.FlagSet, args []string) {
 		fmt.Fprintf(fs.Output(), "Usage of %s:[params] \n", args[0])
 		fs.PrintDefaults()
 	}
-	fs.Parse(args[1:])
-	err := InitConfig(*cFile)
-	if err != nil {
+	if err := fs.Parse(args[1:]); err != nil {
+		Log.Fatal().Err(err).Msg("can't init app")
+	}
+
+	if err := InitConfig(*cFile); err != nil {
 		Log.Fatal().Err(err).Msg("can't init app")
 	}
 }

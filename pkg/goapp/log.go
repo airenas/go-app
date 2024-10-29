@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-//Log is applications logger
+// Log is applications logger
 var Log = log.Logger
 
 func initLog() {
