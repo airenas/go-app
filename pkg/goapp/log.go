@@ -17,7 +17,7 @@ func initLog() {
 	}
 	l, err := zerolog.ParseLevel(strings.ToLower(sl))
 	if err != nil {
-		Log.Error().Err(err).Msgf("can't parse %s", sl)
+		Log.Error().Err(err).Str("data", sl).Msg("can't parse")
 	} else {
 		Log = log.Logger.Level(l)
 	}

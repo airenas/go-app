@@ -34,7 +34,7 @@ func InitConfig(configFile string) error {
 	}
 	initLog()
 	if Config.ConfigFileUsed() != "" {
-		Log.Info().Msgf("Config loaded from: %s", Config.ConfigFileUsed())
+		Log.Info().Str("file", Config.ConfigFileUsed()).Msg("Config loaded")
 	}
 	return nil
 }
