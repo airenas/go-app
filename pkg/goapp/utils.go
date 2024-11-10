@@ -33,7 +33,7 @@ func HidePass(link string) string {
 func Estimate(name string) func() {
 	start := time.Now()
 	return func() {
-		Log.Info().Str("time", fmt.Sprintf("%v", time.Since(start))).Str("name", name).Msg("took")
+		Log.Info().Str("elapsed", fmt.Sprintf("%v", time.Since(start))).Str("name", name).Msg("took")
 	}
 }
 
