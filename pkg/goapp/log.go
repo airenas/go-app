@@ -11,6 +11,7 @@ import (
 var Log = log.Logger
 
 func initLog() {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
 	sl := Config.GetString("logger.level")
 	if sl == "" {
 		sl = "info"
